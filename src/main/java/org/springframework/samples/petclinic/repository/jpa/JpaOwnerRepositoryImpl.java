@@ -20,6 +20,7 @@ import java.util.Collection;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import org.springframework.dao.DataAccessException;
 
 import org.springframework.orm.hibernate3.support.OpenSessionInViewFilter;
 import org.springframework.samples.petclinic.model.Owner;
@@ -76,6 +77,12 @@ public class JpaOwnerRepositoryImpl implements OwnerRepository {
             this.em.merge(owner);
         }
 
+    }
+
+    @Override
+    public void deleteById(int id) throws DataAccessException {
+        Owner ownerToRemove = this.findById(id);
+        this.em.remove(ownerToRemove);
     }
 
 }

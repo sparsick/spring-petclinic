@@ -105,5 +105,10 @@ public class ClinicServiceImpl implements ClinicService {
         return vetRepository.findAll();
     }
 
+    @Override
+    public void deleteOwnerById(int id) throws DataAccessException {
+        this.ownerRepository.deleteById(id);
+    }
+
 
 }

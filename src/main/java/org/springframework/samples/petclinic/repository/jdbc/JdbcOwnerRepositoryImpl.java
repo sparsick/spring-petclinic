@@ -27,7 +27,9 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.samples.petclinic.model.Owner;
@@ -152,6 +154,20 @@ public class JdbcOwnerRepositoryImpl implements OwnerRepository {
         for (Owner owner : owners) {
             loadPetsAndVisits(owner);
         }
+    }
+
+    @Override
+    public void deleteById(int id) throws DataAccessException {
+        Owner ownerToRemove = this.findById(id);
+        
+        for(Pet pet : ownerToRemove.getPets()) {
+            SqlParameterSource paramSourceForPetId = new MapSqlParameterSource("petId", pet.getId());
+            this.namedParameterJdbcTemplate.update("DELETE FROM visits WHERE pet_id = :petId", paramSourceForPetId);
+        this.namedParameterJdbcTemplate.update("DELETE FROM pets WHERE id = :petId", paramSourceForPetId);
+        }
+        
+        SqlParameterSource paramSourceForOwnerId = new MapSqlParameterSource("ownerId", id);
+        this.namedParameterJdbcTemplate.update("DELETE FROM owners WHERE id = :ownerId", paramSourceForOwnerId);
     }
 
 
